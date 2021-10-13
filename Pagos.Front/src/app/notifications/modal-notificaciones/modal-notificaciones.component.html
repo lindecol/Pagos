@@ -1,0 +1,43 @@
+<h1 mat-dialog-title translate>Notas</h1>
+<mat-divider></mat-divider>
+<div style="margin-bottom: 20px"></div>
+<div mat-dialog-content>
+  <mat-form-field appearance="outline" style="width: 100%">
+    <mat-label translate>Fecha</mat-label>
+    <input matInput [value]="data.notificacion?.FechaMensaje" [placeholder]="'Fecha' | translate" readonly />
+  </mat-form-field>
+  <mat-form-field appearance="outline" style="width: 100%">
+    <mat-label translate>Asunto</mat-label>
+    <input matInput [value]="data.notificacion?.Asunto" [placeholder]="'Asunto' | translate" readonly />
+  </mat-form-field>
+  <mat-form-field appearance="outline" style="width: 100%">
+    <mat-label translate>Mensaje</mat-label>
+    <textarea
+      [value]="data.notificacion?.ContenidoMensaje"
+      matInput
+      [placeholder]="'Mensaje' | translate"
+      readonly
+    ></textarea>
+  </mat-form-field>
+  <mat-form-field appearance="outline" style="width: 100%">
+    <mat-label translate>Usuario</mat-label>
+    <input
+      matInput
+      [maxLength]="100"
+      [value]="data.notificacion?.UsuarioLinde"
+      [placeholder]="'Usuario' | translate"
+      readonly
+    />
+  </mat-form-field>
+</div>
+<mat-divider></mat-divider>
+<div mat-dialog-actions fxLayout="row" fxLayoutAlign="end center">
+  <button mat-raised-button color="warn" (click)="onNoClick()">
+    <mat-icon>undo</mat-icon>
+    <span translate>Cerrar</span>
+  </button>
+  <button mat-raised-button color="primary" (click)="onSubmit()">
+    <mat-icon>done</mat-icon>
+    <span translate>Marcar como leído</span>
+  </button>
+</div>

@@ -1,0 +1,108 @@
+﻿@{
+    ViewBag.Title = "Envio de correo";
+}
+
+<br />
+<br />
+<br />
+<div class="container-fluid">
+    <div class="col-sm-1" style="width:30%">
+
+    </div>
+    <div class="col-sm-1" style="width:70%">
+        <br />
+        <br />
+        <div class="row">
+            <div class="col-sm-3" style="margin: 2px">
+                <label>Correo electrónico:</label>
+            </div>
+            <div class="col-sm-3" style="margin:5px">
+                <input type="email" id="TxtUsuario" maxlength="30" />
+            </div>
+        </div>
+        <div class="row" />
+        <br />
+        <br />
+        <div class="row">
+            <div class="col-sm-3">
+            </div>
+            <div class="col-sm-3">
+                <input type="button" id="BtnAceptarEnvio" value="Enviar" style="font-size:large; background-color:darkslateblue; color:aliceblue" />
+            </div>
+        </div>
+        <br />
+        <br />
+    </div>
+</div>
+<br />
+<br />
+
+<!--Modal zone-->
+<div class="modal fade" id="DivValidacionProd">
+    <div class="modal-dialog" style="width:450px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title" style="font-size: 200%;font-weight:normal;text-align: center;">Envío de correo  </h1>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-10" style="margin:5px">
+                        <span id="TxtPreguntaModalProd"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="BtnAceptarValidacion" class="btn alert-info" style="background-color: darkslateblue; color: aliceblue" data-dismiss="modal">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+
+        //var myVar = '/Envio';
+        var myVar = '/IU/Envio';
+        var usu = '';
+        var tok = '';
+        $(document).ready(function () {
+
+        });
+
+        $('#BtnAceptarEnvio').on('click', function () {
+            debugger;
+            var usu = $('#TxtUsuario').val();
+            if (usu == '') {
+                $('#TxtPreguntaModalProd').html("<p>El correo de usuario es necesario</p>");
+                $('#DivValidacionProd').modal({ show: true });
+                setTimeout(function () { }, 500);
+            }
+            else {
+                $('#TxtPreguntaModalProd').html("<p>Si el correo es correcto, se enviará el link para cambio de contraseña en unos instantes.</p>");
+                $('#DivValidacionProd').modal({ show: true });
+                $('#TxtUsuario').val('');
+
+                var datos = $.post(myVar + '/Accion',
+                    { usuario: usu }, function (d) {
+                        //$('#TxtPreguntaModalProd').html("<p>" + d + "</p>");
+                        //$('#DivValidacionProd').modal({ show: true });
+                        setTimeout(function () { }, 500);
+                    });
+                }
+        });
+
+        $('#BtnAceptarValidacion').on('click', function () {
+            if ($('#TxtPreguntaModalProd').html().indexOf('éxito') > 0) {
+                $(location).attr('href', 'https://www.linde.co');
+            }
+        });
+
+    </script>
+
+}

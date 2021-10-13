@@ -1,0 +1,360 @@
+﻿
+@{
+    ViewBag.Title = "Pago";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <div>
+        <div class="row" id="DivMonto">
+            <div class="col-sm-3" style="margin: 2px">
+                <label>Monto:</label>
+            </div>
+            <div class="col-sm-3" style="margin:5px">
+                <input type="text" id="TxtMonto" maxlength="20" disabled="disabled" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3" style="margin: 2px">
+                <label>Cargos al pago:</label>
+            </div>
+            <div class="col-sm-3" style="margin:5px">
+                <select name="CboCargoPagos" id="CboCargoPagos" style="margin-right:15px">
+                    <option value="-1">Seleccione...</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-3" style="margin: 2px">
+                <label>Saldo a pagar:</label>
+            </div>
+            <div class="col-sm-3" style="margin:5px">
+                <input type="text" id="TxtMontoCargo" maxlength="20" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-3" style="margin: 2px">
+                <label>Comisión:</label>
+            </div>
+            <div class="col-sm-3" style="margin:5px">
+                <input type="text" id="TxtDiferencia" maxlength="20" disabled />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-3" style="margin: 2px">
+                <label>Monto Total:</label>
+            </div>
+            <div class="col-sm-3" style="margin:5px">
+                <input type="text" id="TxtMontoTotal" maxlength="20" disabled />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-3" style="margin: 2px">
+                <label>Referencia:</label>
+            </div>
+            <div class="col-sm-3" style="margin:5px">
+                <input type="text" id="TxtReferencia" maxlength="20" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-3" style="margin:5px">
+                <input type="button" id="btnPagar" maxlength="20" value="Pagar" />
+            </div>
+        </div>
+        <form>
+        </form>
+    </div>
+
+    <!--Modal zone-->
+    <div class="modal fade" id="DivValidacionPago">
+        <div class="modal-dialog" style="width:450px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" style="font-size: 200%;font-weight:normal;text-align: center;">Pago</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-10" style="margin:5px">
+                            <span id="TxtPreguntaModalPago"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="BtnAceptarValidacionPago" class="btn alert-info" style="background-color: darkslateblue; color: aliceblue" data-dismiss="modal">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+
+@section scripts{
+
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://checkout.wompi.co/widget.js"></script>
+
+    <script type="text/javascript">
+        var montoComparar = 0;
+        var init = 0;
+        var _monto = 0;
+        var _refe = '';
+        var _direccion = 'https://localhost:44385/DetallePago/Index?id=transaction';
+        var _llavePublica = 'pub_test_8pyhExyKxugyh0zPygGfYVE2Gmxpbg5C';
+        var _empId = '';
+        var myVar = '/IU/Pago';
+        //var myVar = '/Pago';
+        var montoMultiple = 0;
+        var v = 0;
+        var _multipago = '';
+
+        const formatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 0
+        });
+
+        $(document).ready(function () {
+            $('#TxtReferencia').prop('disabled', true);
+            _empid = '@ViewBag.empId';
+            _multipago = '@ViewBag.mp';
+            ValidarValor();
+            if (_multipago == 't') {
+                $('#DivMonto').prop('hidden', true);
+            }
+        });
+
+        function ValidarValor() {
+            var datos = $.post(myVar + '/ObtenerValorAPagar', { referencia: '@ViewBag.Referencia', monto: '@ViewBag.Monto', empId: _empId }, function (da) {
+                _monto = da * 100;
+                var datosC = $.post(myVar + '/ObtenerConsecutivoPago', { referencia: '@ViewBag.Referencia', monto: '@ViewBag.Monto' }, function (d) {
+                    _refe = '@ViewBag.Referencia' + '_' + d;
+		            if ('@ViewBag.mp' != 't'){
+		    	        var m = Math.round(_monto / 100).toString();
+                    	m = formatter.format(m);
+                    	montoComparar = _monto / 100;
+                    	$('#TxtMontoCargo').val(m);
+		            }
+		            $('#TxtMonto').val(m);
+                        $('#TxtReferencia').val(_refe);
+                        init = 1;
+                    });
+                    InitCombo();
+                });
+
+            if ('@ViewBag.mp' == 't') {
+                var n = formatter.format('@ViewBag.Monto');
+                $('#TxtMontoCargo').prop('disabled', true);
+                $('#TxtMontoCargo').val(n);
+		        montoMultiple = @ViewBag.Monto;
+            }
+            else {
+                $('#TxtMontoCargo').prop('disabled', false);
+            }
+        }
+
+        function InitCombo() {
+            var l = $.post(myVar + '/ListarCargoPago', { }, function (data) {
+                $('#CboCargoPagos').empty();
+                $.each(data, function (i, item) {
+                    $('#CboCargoPagos').append($('<option>', {
+                        value: item.Id,
+                        text: item.Tipo
+                    }));
+                });
+            });
+        }
+
+        $('#TxtMontoCargo').on('change', function () {
+            var s = $('#TxtMontoCargo').val().replace('$', '').replace(',', '').replace(',', '').replace(',', '');
+            var t = $('#TxtMonto').val().replace('$', '').replace(',', '').replace(',', '').replace(',', '');
+            var d = $('#TxtDiferencia').val().replace('$', '').replace(',', '').replace(',', '').replace(',', '');
+
+
+            if (_multipago.length == 0) {
+                if (parseInt(t) < parseInt(s) - parseInt(d)) {
+                    $('#TxtPreguntaModalPago').html('<p>El saldo a pagar no puede ser mayor al monto indicado.</p>');
+                    $('#DivValidacionPago').modal('show');
+                    $('#btnPagar').prop('disabled', true);
+                    $('#TxtMontoCargo').val('');
+                    return false;
+                }
+                else {
+                    var z = s - d;
+                    var zz = formatter.format(z);
+
+
+                    $('#TxtMontoTotal').val(zz);
+
+                }
+            }
+            else {
+                $('#btnPagar').prop('disabled', false);
+            }
+            s = formatter.format(s);
+            $('#TxtMontoCargo').val(s);
+        });
+
+
+
+        $('#CboCargoPagos').on('change', function () {
+            var vv = '';
+
+
+            if ('@ViewBag.mp' == '') {
+                v = $('#TxtMonto').val();
+                vv = v;
+
+            }
+            else {
+                v = montoMultiple.toString();
+            }
+
+            v = v.replace('$','');
+            v = v.replace(',', '');
+            v = v.replace(',', '');
+            v = v.replace(',', '');
+
+
+
+            var vId = $('#CboCargoPagos').val();
+            var vValor = '$' + v;
+
+            var l = $.post(myVar + '/ListarValorCargoPago', { id: vId, valor: v }, function (data) {
+                var m = formatter.format(Math.round(data));
+
+                vValor = vValor.replace('$','');
+                vValor = vValor.replace(',','');
+                vValor = vValor.replace(',', '');
+                vValor = vValor.replace(',', '');
+                vValor = vValor.replace(',', '');
+
+                m = m.replace('$', '');
+                m = m.replace(',', '');
+                m = m.replace(',', '');
+                m = m.replace(',', '');
+                m = m.replace(',', '');
+
+                var dife = 0;
+                var dif = '';
+                dife = m - vValor;
+		var z = parseInt(m);
+		dif = formatter.format(dife.toString());
+                $('#TxtDiferencia').val(dif);
+
+                m = formatter.format(m);
+		var zz = formatter.format(z);
+                if ('@ViewBag.mp' != 't') {
+                    $('#TxtMontoCargo').val(vv);
+                    $('#TxtMontoTotal').val(zz);
+                }
+                else{
+                   $('#TxtMontoCargo').val(formatter.format((montoMultiple).toString()));
+		   $('#TxtMontoTotal').val(zz);
+		   $('#btnPagar').prop('disabled', false);
+		}
+
+            });
+        });
+
+        $('#btnPagar').on('click', function () {
+            $('#btnPagar').prop('disabled', true);
+
+            var a = $('#TxtMonto').val().replace('$', '').replace(',', '').replace(',', '').replace(',', '');
+            var comision = $('#TxtMontoCargo').val().replace('$', '').replace(',', '').replace(',', '').replace(',', '');
+            var diferencia = $('#TxtDiferencia').val().replace('$', '').replace(',', '').replace(',', '').replace(',', '');
+
+            var vId = $('#CboCargoPagos').val();
+
+            var aa = parseInt(a) + parseInt(comision);
+
+            if ('@ViewBag.mp' != 't') {
+                var l = $.post(myVar + '/ListarValorCargoPago', { id: vId, valor: aa }, function (data) {
+                var b = $('#TxtMontoCargo').val().replace('$', '').replace(',', '').replace(',', '').replace(',', '');
+
+                //else {
+                    var refe = $('#TxtReferencia').val();
+                    var mont = $('#TxtMontoCargo').val();
+                    mont = mont.replace('$', '').replace(',', '').replace(',', '').replace(',', '');
+		            var l = $.post(myVar + '/RegistrarPagoDetalle', { documento: refe, valor: 0 }, function (data) {
+			
+			        _monto = $('#TxtMontoCargo').val();
+                        _monto = _monto.replace('$', '');
+                        _monto = _monto.replace(',', '');
+                        _monto = _monto.replace(',', '');
+                        _monto = _monto.replace(',', '');
+
+                        _monto = (parseFloat(_monto) + parseFloat(diferencia)) * 100;
+
+                        if (init == 0)
+                            return false;
+                        else {
+                            if ($('#CboCargoPagos').val() == 1) {
+                                location.href = ('../PagoPSE/Index?monto=' + _monto + '&referencia=' + refe);
+                            }
+                            else if ($('#CboCargoPagos').val() == 2) {
+                                location.href = ('../PagoTDC/Index?monto=' + _monto + '&referencia=' + refe);
+                            }
+                            else {
+                                location.href = ('../PagoTransfer/Index?monto=' + _monto + '&referencia=' + refe);
+                            }
+                        }
+                    });
+                //}
+            });
+	   }
+	   else{
+		    var refe = $('#TxtReferencia').val();
+                    var mont = $('#TxtMontoTotal').val();
+                    mont = mont.replace('$', '').replace(',', '').replace(',', '').replace(',', '');
+		    debugger;
+                    var l = $.post(myVar + '/RegistrarPagoDetalle', { documento: refe, valor: 0 }, function (data) {
+			debugger;
+			_monto = $('#TxtMontoCargo').val();
+                        _monto = _monto.replace('$', '');
+                        _monto = _monto.replace(',', '');
+                        _monto = _monto.replace(',', '');
+                        _monto = _monto.replace(',', '');
+
+                        _monto = (parseFloat(_monto) + parseFloat(diferencia)) * 100;
+
+                        if (init == 0)
+                            return false;
+                        else {
+                            if ($('#CboCargoPagos').val() == 1) {
+                                location.href = ('../PagoPSE/Index?monto=' + _monto + '&referencia=' + refe);
+                            }
+                            else if ($('#CboCargoPagos').val() == 2) {
+                                location.href = ('../PagoTDC/Index?monto=' + _monto + '&referencia=' + refe);
+                            }
+                            else {
+                                location.href = ('../PagoTransfer/Index?monto=' + _monto + '&referencia=' + refe);
+                            }
+                        }
+                    });
+
+	   }
+
+
+
+        });
+
+    </script>
+
+
+}

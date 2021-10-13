@@ -1,0 +1,168 @@
+﻿@{
+    ViewBag.Title = "Cambiar Contraseña";
+}
+
+<br />
+<br />
+<br />
+<div class="container-fluid">
+    <div class="col-sm-1" style="width:30%">
+        <span id="TxtUsuario"></span>
+    </div>
+    <div class="col-sm-1" style="width:70%">
+        <div class="row">
+            <div class="col-sm-3" style="margin: 2px">
+                <label>Contraseña:</label>
+            </div>
+            <div class="col-sm-3" style="margin:5px">
+                <input type="password" id="Pass01" maxlength="20" />
+            </div>
+        </div>
+        <div class="row" />
+        <br />
+        <div class="row">
+            <div class="col-sm-3" style="margin:2px">
+                <label>Intente de nuevo:</label>
+            </div>
+            <div class="col-sm-3" style="margin:5px">
+                <input type="password" id="Pass02" maxlength="20" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-sm-3">
+            </div>
+            <div class="col-sm-3">
+                <input type="button" id="BtnAceptar" value="Aceptar" style="font-size:large; background-color:darkslateblue; color:aliceblue" />
+            </div>
+        </div>
+        <br />
+        <br />
+    </div>
+</div>
+<br />
+<br />    
+ <!--Modal zone-->
+<div class="modal fade" id="DivValidacionProd">
+    <div class="modal-dialog" style="width:450px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title" style="font-size: 200%;font-weight:normal;text-align: center;">Cambiar contraseña</h1>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-10" style="margin:5px">
+                        <span id="TxtPreguntaModalProd"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="BtnAceptarValidacion" class="btn alert-info" style="background-color: darkslateblue; color: aliceblue" data-dismiss="modal">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+
+        //var myVar = '/Home';
+        var myVar = '/IU/Home';
+        var usu = '';
+        var tok = '';
+        $(document).ready(function () {
+            var s = JSON.parse('@Html.Raw(Json.Encode(ViewData["mensaje"]))');
+            LeerDatos(s);
+        });
+
+        function LeerDatos(msj) {
+            var datos = $.post(myVar + '/MostrarInformacion',
+                { mensaje: msj }, function (d) {
+                    if (d.indexOf(':') > -1) {
+                        usu = d.split(':')[0];
+                        tok = d.split(':')[1];
+                        $('#TxtUsuario').text('Usuario: ' + usu);
+                        Mostrarinfo(false);
+                    }
+                    else {
+                        $('#TxtUsuario').text('Error: ' + d);
+                        Mostrarinfo(true);
+                    }
+                });
+        }
+
+        function Mostrarinfo(opcion) {
+            $('#Pass01').prop('disabled', opcion);
+            $('#Pass02').prop('disabled', opcion);
+            $('#BtnAceptar').prop('disabled', opcion);
+        }
+
+        $('#BtnAceptar').on('click', function () {
+            var p1 = $('#Pass01').val();
+            var p2 = $('#Pass02').val();
+
+            if (p1 == "") {
+                $('#TxtPreguntaModalProd').html("<p>La contraseña inicial no puede ser vacia</p>");
+                $('#DivValidacionProd').modal({ show: true });
+                setTimeout(function () { }, 500);
+            }
+            else if (p2 == "") {
+                $('#TxtPreguntaModalProd').html("<p>La contraseña confirmada no puede ser vacia</p>");
+                $('#DivValidacionProd').modal({ show: true });
+                setTimeout(function () { }, 500);
+            }
+            else if (p1 != p2) {
+                $('#TxtPreguntaModalProd').html("<p>Las contraseñas no pueden ser diferentes</p>");
+                $('#DivValidacionProd').modal({ show: true });
+                setTimeout(function () { }, 500);
+            }
+            else {
+                var datos = $.post(myVar + '/Accion',
+                    { usuario: usu, pass: p1, token: tok }, function (d) {
+                        if (d.indexOf('error') > -1) {
+                            $('#TxtPreguntaModalProd').html("<p>Error. Sucedió un error al cambiar la contraseña</p>");
+                            $('#DivValidacionProd').modal({ show: true });
+                            setTimeout(function () { }, 500);
+                        }
+                        else if (d.indexOf('vacia') > -1) {
+                            $('#TxtPreguntaModalProd').html("<p>Error. Error en el servicio de cambio de contraseña</p>");
+                            $('#DivValidacionProd').modal({ show: true });
+                            setTimeout(function () { }, 500);
+                        }
+                        else if (d.indexOf('repetida') > -1) {
+                            $('#TxtPreguntaModalProd').html("<p>Error. El link de cambio de sesión ya fué usado.</p>");
+                            $('#DivValidacionProd').modal({ show: true });
+                            setTimeout(function () { }, 500);
+                        }
+                        else {
+                            $('#TxtPreguntaModalProd').html("<p>Éxito, el cambio de actualizó correctamente</p>");
+                            $('#DivValidacionProd').modal({ show: true });
+                            setTimeout(function () { }, 500);
+                        }
+                    });
+            }
+            
+        });
+
+        $('#BtnAceptarValidacion').on('click', function () {
+            var m = $('#TxtPreguntaModalProd').html();
+            if (m.indexOf('Éxito') > 0) {
+                $(location).attr('href', 'https://www.linde.co');
+            }
+            else {
+                return true;
+            }
+        });
+
+    </script>
+
+}
+
+

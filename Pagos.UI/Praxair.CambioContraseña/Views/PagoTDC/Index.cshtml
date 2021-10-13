@@ -1,0 +1,261 @@
+﻿
+@{
+    ViewBag.Title = "Pago con TDC";
+}
+<link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+<link href="~/css/font-awesome.min.css" rel="stylesheet" />
+
+
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>Index</title>
+    </head>
+    <body>
+        <div class="row" style="margin-top:5px; margin-left:5px">
+            <div class="col-lg-1">
+                <label>Monto:</label>
+                <span id="TxtMonto">@ViewBag.Monto</span>
+            </div>
+            <div class="col-lg-1">
+                <label>Referencia:</label>
+                <span id="TxtReferencia">@ViewBag.Referencia</span>
+            </div>
+        </div>
+        <div class="row" style="margin-top:5px; margin-left:5px">
+            <div class="col-lg-1">
+                <label>Correo electrónico:</label>
+            </div>
+            <div class="col-lg-1">
+                <input type="email" id="TxtMail" maxlength="30" />
+            </div>
+        </div>
+        <hr />
+        <div class="row" style="margin-top:5px; margin-left:5px">
+            <div class="col-lg-1">
+                <label>Numero de tarjeta:</label>
+            </div>
+            <div class="col-lg-1">
+                <input type="number" id="TxtNumeroTarjeta" maxlength="19" />
+            </div>
+            <div class="col-lg-1">
+            </div>
+            <div class="col-lg-1">
+                <label>CVC:</label>
+            </div>
+            <div class="col-lg-1">
+                <input type="text" id="TxtCVC" maxlength="3" />
+            </div>
+        </div>
+        <div class="row" style="margin-top:5px; margin-left:5px">
+            <div class="col-lg-1">
+                <label>Mes expedición:</label>
+            </div>
+            <div class="col-lg-1">
+                <input type="text" id="TxtMesExpedicion" maxlength="2" />
+            </div>
+            <div class="col-lg-1">
+            </div>
+            <div class="col-lg-1">
+                <label>Año de expedición:</label>
+            </div>
+            <div class="col-lg-1">
+                <input type="text" id="TxtYearExpedicion" maxlength="2" />
+            </div>
+        </div>
+        <div class="row" style="margin-top:5px; margin-left:5px">
+            <div class="col-lg-1">
+                <label>Nombre completo:</label>
+            </div>
+            <div class="col-lg-5">
+                <input type="text" id="TxtNombre" maxlength="30" style="width:86%" />
+            </div>
+        </div>
+        <div class="row" style="margin-top:5px; margin-left:5px">
+            <div class="col-lg-1">
+                <label>Número de cuotas:</label>
+            </div>
+            <div class="col-lg-5">
+                <input type="text" id="TxtCuotas" maxlength="2"/>
+            </div>
+        </div>
+        <hr />
+        <div class="row" style="margin-top:5px; margin-left:5px">
+            <div class="col-lg-1">
+
+            </div>
+            <div class="col-lg-1">
+
+            </div>
+            <div class="col-lg-1">
+                <button id="BtnPagoTDC" class="btn btn-lg" style="background-color:blue; color:white"><i class="fa fa-money"> Pagar</i></button>
+            </div>
+        </div>
+
+
+        <!--Modal zone-->
+        <div class="modal fade" id="DivValidacionPago">
+            <div class="modal-dialog" style="width:450px">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" style="font-size: 200%;font-weight:normal;text-align: center;">Pago  </h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-10" style="margin:5px">
+                                <span id="TxtPreguntaModalPago"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="BtnAceptarValidacionPago" class="btn alert-info" style="background-color: darkslateblue; color: aliceblue" data-dismiss="modal">Ok</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="DivValidacionPagoDatos">
+            <div class="modal-dialog" style="width:450px">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" style="font-size: 200%;font-weight:normal;text-align: center;">Pago  </h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-10" style="margin:5px">
+                                <span id="TxtPreguntaModalPagoDatos"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="BtnAceptarValidacionPagoDatos" class="btn alert-info" style="background-color: darkslateblue; color: aliceblue" data-dismiss="modal">Ok</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+
+@section scripts{
+
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+        //var myVar = '/PagoTDC';
+        var myVar = '/IU/PagoTDC';
+
+        $(document).ready(function () {
+
+        });
+
+        
+
+        $("#TxtMesExpedicion").keypress(function (e) {
+            var kk = e.which;
+
+            if (kk < 48 || kk > 57)
+                e.preventDefault();
+        });
+
+        $("#TxtCVC").keypress(function (e) {
+        var kk = e.which;
+
+        if (kk < 48 || kk > 57)
+            e.preventDefault();
+        });
+
+        $("#TxtYearExpedicion").keypress(function (e) {
+            var kk = e.which;
+
+            if (kk < 48 || kk > 57)
+                e.preventDefault();
+        });
+
+        $("#TxtCuotas").keypress(function (e) {
+            var kk = e.which;
+
+            if (kk < 48 || kk > 57)
+                e.preventDefault();
+        });
+
+        $("#TxtCuotas").focusout(function () {
+            var val = $("#TxtCuotas").val();
+            var lon = val.length;
+            if (lon.length = 2) {
+                if (parseInt(val) > 36) {
+                    $("#TxtCuotas").val('1');
+                    return false;
+                }
+            }
+        });
+
+        $("#TxtMesExpedicion").focusout(function () {
+            var val = $("#TxtMesExpedicion").val();
+            var lon = val.length;
+            if (lon.length = 2) {
+                if (parseInt(val) > 12) {
+                    $("#TxtMesExpedicion").val('');
+                    return false;
+                }
+            }
+        });
+
+        
+
+        $('#BtnPagoTDC').click(function () {
+            $('#BtnPagoTDC').prop('disabled', true);
+            var _correo = $('#TxtMail').val();
+            var _tdc = $('#TxtNumeroTarjeta').val();
+            var _cvc = $('#TxtCVC').val();
+            var _mes = $('#TxtMesExpedicion').val();
+            var _anho = $('#TxtYearExpedicion').val();
+            var _nombre = $('#TxtNombre').val();
+            var _cuota = $('#TxtCuotas').val();
+            var _monto = @ViewBag.Monto * 100;
+            var _refe = '@ViewBag.Referencia';
+            var msg = '';
+
+            if (_correo.length == 0)
+                msg += '<p>Debe diligenciar el correo electrónico</p>';
+            if (_tdc.length == 0)
+                msg += '<p>Debe diligenciar el número de tarjeta</p>';
+            if (_cvc.length == 0)
+                msg += '<p>Debe diligenciar el número de seguridad la tarjeta</p>';
+            if (_mes.length == 0)
+                msg += '<p>Debe diligenciar el mes de vencimiento de la tarjeta</p>';
+            if (_mes.length == 0)
+                msg += '<p>Debe diligenciar el año de vencimiento de la tarjeta</p>';
+            if (_nombre.length == 0)
+                msg += '<p>Debe diligenciar el nombre del titular de la tarjeta</p>';
+            if (_cuota.length == 0 || _cuota == '0')
+                msg += '<p>Debe diligenciar el número de cuotas para el pago</p>';
+
+
+            if (msg.length > 0) {
+                $('#TxtPreguntaModalPagoDatos').html(msg);
+                $('#DivValidacionPagoDatos').modal('show');
+            }
+            else {
+                var l = $.post(myVar + '/RealizarPagoTDC', { correo: _correo, tdc: _tdc, cvc: _cvc, mes: _mes, anho: _anho, nombre: _nombre, cuotas: _cuota, monto: _monto, referencia: _refe }, function (data) {
+                    if (data) {
+                        $('#TxtPreguntaModalPago').html('<p>Pago realizado con éxito<p/>');
+                        $('#DivValidacionPago').modal('show');
+                    }
+                    else {
+                        $('#TxtPreguntaModalPago').html('<p>Existe un problema con el pago, por favor intente mas tarde o comuniquese con el administrador<p/>');
+                        $('#DivValidacionPago').modal('show');
+                    }
+                });
+            }
+        });
+
+        $('#BtnAceptarValidacionPago').on('click', function () {
+            location.href = ('../Vacio/Index');
+        });
+    </script>
+}

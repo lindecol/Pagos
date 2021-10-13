@@ -1,0 +1,8 @@
+C:\Proyectos\Praxair\PagosEnLinea\PagosEnLinea\Servicios\Praxair.BackPagosEnLinea\Praxair.BackPagosEnLinea.Negocio\bin\Debug\netstandard2.0\Praxair.Negocio.BackPagosEnLinea.deps.json
+C:\Proyectos\Praxair\PagosEnLinea\PagosEnLinea\Servicios\Praxair.BackPagosEnLinea\Praxair.BackPagosEnLinea.Negocio\bin\Debug\netstandard2.0\Praxair.Negocio.BackPagosEnLinea.dll
+C:\Proyectos\Praxair\PagosEnLinea\PagosEnLinea\Servicios\Praxair.BackPagosEnLinea\Praxair.BackPagosEnLinea.Negocio\bin\Debug\netstandard2.0\Praxair.Negocio.BackPagosEnLinea.pdb
+C:\Proyectos\Praxair\PagosEnLinea\PagosEnLinea\Servicios\Praxair.BackPagosEnLinea\Praxair.BackPagosEnLinea.Negocio\obj\Debug\netstandard2.0\Praxair.Negocio.BackPagosEnLinea.AssemblyInfoInputs.cache
+C:\Proyectos\Praxair\PagosEnLinea\PagosEnLinea\Servicios\Praxair.BackPagosEnLinea\Praxair.BackPagosEnLinea.Negocio\obj\Debug\netstandard2.0\Praxair.Negocio.BackPagosEnLinea.AssemblyInfo.cs
+C:\Proyectos\Praxair\PagosEnLinea\PagosEnLinea\Servicios\Praxair.BackPagosEnLinea\Praxair.BackPagosEnLinea.Negocio\obj\Debug\netstandard2.0\Praxair.Negocio.BackPagosEnLinea.csproj.CoreCompileInputs.cache
+C:\Proyectos\Praxair\PagosEnLinea\PagosEnLinea\Servicios\Praxair.BackPagosEnLinea\Praxair.BackPagosEnLinea.Negocio\obj\Debug\netstandard2.0\Praxair.Negocio.BackPagosEnLinea.dll
+C:\Proyectos\Praxair\PagosEnLinea\PagosEnLinea\Servicios\Praxair.BackPagosEnLinea\Praxair.BackPagosEnLinea.Negocio\obj\Debug\netstandard2.0\Praxair.Negocio.BackPagosEnLinea.pdb

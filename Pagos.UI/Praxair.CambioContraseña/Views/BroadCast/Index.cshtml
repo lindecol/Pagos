@@ -1,0 +1,267 @@
+﻿
+@{
+    ViewBag.Title = "Broadcast";
+
+}
+
+<div class="col-sm-1" style="width:90%; text-align:right">
+    <span id="TxtUsuario">Usuario:@User.Identity.Name</span>
+</div>
+<br />
+<br />
+<div class="container-fluid">
+    <div class="col-sm-1" style="width:60%">
+        <div id="TabContenido" style="background-color:aliceblue ; width: 100%; height:330px; overflow: scroll;">
+            <table id="datInfo" class="display nowrap" style="width:100%; font-size:10px">
+                <thead>
+                    <tr>
+                        <th>Selección</th>
+                        <th>Id</th>
+                        <th>Nombre de Cliente</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div class="col-sm-1" style="width:40%">
+        <div class="row">
+            <div class="col-sm-5" style="margin: 2px">
+                <label id="LblAsunto" for="TxtAsunto">Asunto:</label>
+                <br />
+                <input type="text" id="TxtAsunto" style="width:100%" />
+            </div>
+            
+        </div>
+        <div class="row">
+            <div class="col-sm-10" style="margin: 2px">
+                <label id="LblAdjunto" for="TxtAdjunto">Adjunto:</label>
+                <br />
+                <input type="file" id="TxtAdjunto" accept="application/pdf" style="width:100%" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-10" style="margin:2px">
+                <label id="LblMensaje" for="TxtMensaje">Mensaje:</label>
+                <br />
+                <textarea id="TxtMensaje" maxlength="1024" rows="10" cols="100" style="width:100%"></textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-10" style="margin:2px">
+                <label id="LblBroadCast" for="TxtMensaje">Todos:</label>
+                <br />
+                <input id="ChkBroadCast" type="checkbox" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-sm-10" style="text-align:center">
+                <input type="button" id="BtnAceptar" value="Aceptar" style="font-size:large; background-color:darkslateblue; color:aliceblue" />
+            </div>
+        </div>
+        <br />
+    </div>
+</div>
+<br />
+<br />
+<!--Modal zone-->
+<div class="modal fade" id="DivValidacionProd">
+    <div class="modal-dialog" style="width:450px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title" style="font-size: 200%;font-weight:normal;text-align: center;">Enviar mensaje</h1>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-10" style="margin:5px">
+                        <span id="TxtPreguntaModalProd"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="BtnAceptarValidacion" class="btn alert-info" style="background-color: darkslateblue; color: aliceblue" data-dismiss="modal">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Scripts/datatables.min.css" />
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/datatables.min.js"></script>
+
+    <script type="text/javascript">
+        var _usuario = '';
+        var elementosImpresion = [];
+        var dat = [];
+        var myVar = '/IU/BroadCast'
+        //var myVar = '/BroadCast';
+
+        var usu = '';
+
+        $(document).ready(function () {
+            debugger;
+            var datos = $.post(myVar + '/ListarSesiones', {}, function (da) {
+                $('#datInfo').DataTable().clear();
+                $('#datInfo').DataTable().draw();
+                dat = da;
+                if (dat.length > 0) {
+                    CargarLista(dat);
+                }
+            });
+        });
+
+        $('#TxtAdjunto').on('change', function (e) {
+            var files = e.target.files;
+            var data = new FormData();
+
+            for (var x = 0; x < files.length; x++) {
+                if (files[0].size >= 10240000) {
+                    $('#TxtPreguntaModalProd').text('El tamaño del archivo ha sobrepasado el tamaño máximo permitido para la aplicación');
+                    $('#DivValidacionProd').modal({ show: true });
+                    return false;
+                }
+                data.append("file" + x, files[x]);
+            }
+
+            $.ajax({
+                type: "POST",
+                url: myVar + '/CargarArchivo',
+                contentType: false,
+                processData: false,
+                data: data,
+                success: function (result) {
+                    _archivoDig = result;
+                },
+                error: function (xhr, status, p3, p4) {
+                    var err = "Error " + " " + status + " " + p3 + " " + p4;
+                    if (xhr.responseText && xhr.responseText[0] == "{")
+                        err = JSON.parse(xhr.responseText).Message;
+                }
+            });
+        });
+
+        $('#ChkBroadCast').on('click', function () {
+            var c = $('#ChkBroadCast').prop('checked');
+            $('#TabContenido').attr('disabled', 'disabled');
+
+        });
+
+
+        function CargarLista(datos) {
+            $('#datInfo').DataTable({
+                destroy: true,
+                paging: true,
+                searching: true,
+                data: datos
+                ,
+                "columns": [
+                    { "data": null, "defaultContent": "<input id='ChkImpresion' type='checkbox' data- toggle='toggle' onChange = 'AdicionEnv(this)' /> ", "targets": -1 },
+                    { "data": "Id", "name": "Id", "autoWidth": true },
+                    { "data": "Usuario", "name": "Usuario", "autoWidth": true },
+                ]
+            });
+        }
+
+        function AdicionEnv(id) {
+            debugger;
+            var elementoImpresion = {};
+            elementoImpresion.Id = id.parentElement.parentElement.children[1].textContent.trim();
+
+
+            if (id.checked) {
+                elementosImpresion.push(elementoImpresion);
+            }
+            else {
+                for (var i = elementosImpresion.length - 1; i--;) {
+                    if (elementosImpresion[i].Archivo == elementoImpresion.Archivo && elementosImpresion[i].Sucursal == elementoImpresion.Sucursal)
+                        elementosImpresion.splice(i, 1);
+                }
+            }
+        };
+
+
+
+        $('#BtnAceptar').on('click', function () {
+            var salida = '';
+            var vAdjunto = '';
+            var cuantos = 0;
+            debugger;
+
+            vAdjunto = $('#TxtAdjunto')[0].value;
+            var asunto = $('#TxtAsunto').val();
+            var mensaje = $('#TxtMensaje').val();
+            var u = '@User.Identity.Name';
+
+            if (u == '')
+                u = 'BROADCAST';
+
+
+            if (asunto == '') {
+                salida += '<p>El asunto es obligatorio.</p>';
+            }
+            if (mensaje == '') {
+                salida += '<p>El mensaje es obligatorio.</p>';
+            }
+
+            if (salida != '') {
+                $('#TxtPreguntaModalProd').html(salida);
+                $('#DivValidacionProd').modal({ show: true });
+                setTimeout(function () { }, 500);
+            }
+            else {
+                $('#BtnAceptar').prop('disabled', true);
+                var todos = $('#ChkBroadCast').prop('checked');
+                if (todos == true) {
+
+                    var datos = $.post(myVar + '/CrearMensajesBroadCast', { asunto: asunto, mensaje: mensaje, adjunto: vAdjunto, usuarioLinde: u }, function (d) {
+                            if (d == true) {
+                                $('#TxtPreguntaModalProd').html("<p>Los mensajes fueron enviados con éxito</p>");
+                                $('#DivValidacionProd').modal({ show: true });
+                                setTimeout(function () { }, 500);
+                            }
+                        $('#BtnAceptar').prop('disabled', false);
+                        $('#TxtAsunto').val('');
+                        $('#TxtMensaje').val('');
+                        $('#TxtAdjunto')[0].value('');
+                        });
+                }
+                else {
+
+                    if (elementosImpresion.length == 0) {
+                        $('#TxtPreguntaModalProd').html("<p>Debe seleccionar un elemento de la lista o seleccionar el check 'Todos'.</p>");
+                        $('#DivValidacionProd').modal({ show: true });
+                        setTimeout(function () { }, 500);
+                        $('#BtnAceptar').prop('disabled', false);
+
+                    }
+                    else {
+                        $('#BtnAceptar').prop('disabled', true);
+
+                        var datos = $.post(myVar + '/CrearMensajes',
+                            { sesiones: elementosImpresion, asunto: asunto, mensaje: mensaje, adjunto: vAdjunto, usuarioLinde: u }, function (d) {
+                                if (d == true) {
+                                    $('#TxtPreguntaModalProd').html("<p>Los mensajes fueron enviados con éxito</p>");
+                                    $('#DivValidacionProd').modal({ show: true });
+                                    setTimeout(function () { }, 500);
+                                }
+                                $('#BtnAceptar').prop('disabled', false);
+                                $('#TxtAsunto').val('');
+                                $('#TxtMensaje').val('');
+                                $('#TxtAdjunto').val('');
+                            });
+
+                    }
+                }
+            }
+        });
+
+    </script>
+
+
+}

@@ -1,0 +1,185 @@
+﻿@{
+    ViewBag.Title = "Crear Usuario";
+}
+
+<br />
+<br />
+<br />
+<div class="container-fluid">
+    <div class="col-sm-1" style="width:70%">
+        <div class="row">
+            <div class="col-sm-4" style="margin: 2px">
+                <label>Correo:</label>
+            </div>
+            <div class="col-sm-3" style="margin:5px">
+                <input type="email" id="TxtCorreoCrea" maxlength="50" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4" style="margin:2px">
+                <label>Usuario:</label>
+            </div>
+            <div class="col-sm-3" style="margin:5px">
+                <input type="text" id="TxtUsuarioCrea" maxlength="20" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4" style="margin:2px">
+                <label>Pais:</label>
+            </div>
+            <div class="col-sm-3" style="margin:5px">
+                <select id="CboPaisCrea">
+                    <option id="-1">Seleccione...</option>
+                    <option id="1">COLOMBIA</option>
+                    <option id="2">ECUADOR</option>
+                    <option id="3">VENEZUELA</option>
+                    <option id="4">PANAMÁ</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4" style="margin:2px">
+                <label>Empresa:</label>
+            </div>
+            <div class="col-sm-3" style="margin:5px">
+                <select id="CboEmpresaCrea" disabled>
+                    <option id="-1">Todos...</option>
+                    <option id="1">Oxígenos de Colombia</option>
+                    <option id="2">Liquido Carbónico</option>
+                    <option id="3">Praxair Gases industriales</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4" style="margin:2px">
+                <label>Identificación:</label>
+            </div>
+            <div class="col-sm-3" style="margin:5px">
+                <input type="text" id="TxtIdentificacionCrea" maxlength="20" />
+            </div>
+        </div>
+
+        <br />
+        <div class="row">
+            <div class="col-sm-3">
+            </div>
+            <div class="col-sm-3">
+                <input type="button" id="BtnCrearUsuario" onclick="CrearUsuario();"  value="Crear usuario" style="font-size:large; background-color:darkslateblue; color:aliceblue" />
+            </div>
+        </div>
+        <br />
+        <br />
+    </div>
+</div>
+<br />
+<br />
+<!--Modal zone-->
+<div class="modal fade" id="DivValidacionCrea">
+    <div class="modal-dialog" style="width:450px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title" style="font-size: 200%;font-weight:normal;text-align: center;">Recuerde gestionar el cambio de su contraseña</h1>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-10" style="margin:5px">
+                        <span id="TxtPreguntaModalCrea"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="BtnAceptarCrear" class="btn alert-info" style="background-color: darkslateblue; color: aliceblue" data-dismiss="modal">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+
+        //var myVar = '/CrearUsuario';
+        var myVar = '/IU/CrearUsuario';
+        var usu = '';
+        var tok = '';
+        $(document).ready(function () {
+        });
+
+
+        function CrearUsuario() {
+            debugger;
+            var vEmail = '';
+            var vUsuario = '';
+            var vPais = '';
+            var vEmpresa = '';
+            var vIdentificacio = '';
+
+            var vEmail = $('#TxtCorreoCrea').val();
+            var vUsuario = $('#TxtUsuarioCrea').val();
+            var vPais = $('#CboPaisCrea').val();
+            var vEmpresa = $('#CboEmpresaCrea').val();
+            var vIdentificacio = $('#TxtIdentificacionCrea').val();
+            var msg = '';
+
+
+            if (vEmail == '') {
+                msg += '<p>El correo es obligatorio</p>'
+            }
+            if (vUsuario == '') {
+                msg += '<p>El usuario es obligatorio</p>'
+            }
+            if (vPais == 'Seleccione...') {
+                msg += '<p>El Pais es obligatorio</p>'
+            }
+            if (vEmpresa == 'Seleccione...') {
+                msg += '<p>La empresa es obligatoria</p>'
+            }
+            if (vIdentificacio == '') {
+                msg += '<p>La identificación es obligatoria</p>'
+            }
+
+
+            if (msg != '') {
+                $('#TxtPreguntaModalCrea').html(msg);
+                $('#DivValidacionCrea').modal({ show: true });
+                setTimeout(function () { }, 500);
+            }
+            else {
+                var datos = $.post(myVar + '/CrearUsuario', { mail: vEmail, usuario: vUsuario, pais: vPais, empresa: vEmpresa, identificacion: vIdentificacio}, function (d) {
+                    if (d == true) {
+                        $('#TxtPreguntaModalCrea').html('<p>Usuario creado, no olvide cambiar su contraseña, su contraseña es <b>pagos123</b></p>');
+                        $('#DivValidacionCrea').modal({ show: true });
+                        LimpiarDatos();
+                        setTimeout(function () { $(window).attr('location', 'https://www.linde.co/'); }, 5000);
+                    }
+                    else {
+                        $('#TxtPreguntaModalCrea').html('<p>Usuario no creado, puede ser que el usuario o el correo ya existan como sesión</p><p>Por favor comuniquese con el administrador del sistema.</p>');
+                        $('#DivValidacionCrea').modal({ show: true });
+
+                    }
+                });
+            }
+        }
+
+        function LimpiarDatos() {
+            $('#TxtCorreoCrea').val('');
+            $('#TxtUsuarioCrea').val('');
+            $('#CboPaisCrea').val(-1);
+            $('#TxtIdentificacionCrea').val('');
+        }
+
+        $('#BtnAceptarCrear').on('click', function () {
+            //$(location).attr('href', 'https://www.linde.co');
+        });
+
+    </script>
+
+}
+
+

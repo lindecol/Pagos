@@ -1,0 +1,11 @@
+<div fxLayout="column" style="width: 100%">
+  <div fxLayout="row" fxLayoutAlign="center center" style="cursor: pointer">
+    <img (click)="goToLink('https://www.linde.co/')" style="width: 100%" src="assets/header.png" />
+  </div>
+  <div fxLayout="row" style="height: 100%">
+    <router-outlet></router-outlet>
+  </div>
+  <div fxLayout="row" style="cursor: pointer" fxLayoutAlign="center center">
+    <img (click)="goToLink('https://www.linde.co/')" style="width: 100%" src="assets/Footer.png" />
+  </div>
+</div>

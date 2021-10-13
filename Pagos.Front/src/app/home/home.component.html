@@ -1,0 +1,63 @@
+<div class="container">
+  <mat-card>
+    <mat-card-content>
+      <form (ngSubmit)="changuePassword()" [formGroup]="loginForm" novalidate>
+        <br />
+        <div class="login-fields" fxLayout="column" fxLayoutAlign="space-around center" style="width: 100%">
+          <mat-form-field [hideRequiredMarker]="true" appearance="outline" style="width: 30%">
+            <input
+              type="text"
+              matInput
+              formControlName="username"
+              autocomplete="username"
+              [placeholder]="'Username' | translate"
+              required
+              readonly
+            />
+            <mat-error *ngIf="loginForm.controls.username.invalid && loginForm.controls.username.touched">
+              <span translate>Username is required</span>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field [hideRequiredMarker]="true" appearance="outline" style="width: 30%">
+            <input
+              type="password"
+              matInput
+              formControlName="password"
+              autocomplete="current-password"
+              [placeholder]="'Password' | translate"
+              required
+            />
+            <mat-error *ngIf="loginForm.controls.password.invalid && loginForm.controls.password.touched">
+              <span translate>Password is required</span>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field [hideRequiredMarker]="true" appearance="outline" style="width: 30%">
+            <input
+              type="password"
+              matInput
+              formControlName="repeatPassword"
+              autocomplete="current-password"
+              placeholder="Repetir Contraseña"
+              required
+            />
+          </mat-form-field>
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="
+              loginForm.controls.password.value !== loginForm.controls.repeatPassword.value ||
+              loginForm.invalid ||
+              isLoading
+            "
+            style="width: 30%"
+          >
+            <app-loader class="inline-loader" [isLoading]="isLoading"></app-loader>
+            <span translate>Cambiar Contraseña</span>
+          </button>
+          <br />
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

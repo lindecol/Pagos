@@ -1,0 +1,60 @@
+<div class="container">
+  <mat-card style="width: 100%">
+    <div fxLayout="row" fxLayoutAlign="center center">
+      <mat-form-field appearance="outline" class="input-filtrar" style="width: 100%">
+        <mat-label>Filtrar</mat-label>
+        <input matInput (keyup)="applyFilter($event)" #input />
+      </mat-form-field>
+    </div>
+    <div class="mat-elevation-z8">
+      <table mat-table [dataSource]="dataSource" matSort>
+        <ng-container matColumnDef="leido">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>LEIDO</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-icon *ngIf="!row.Leido">visibility_off</mat-icon>
+            <mat-icon *ngIf="row.Leido">visibility</mat-icon>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="fecha">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>FECHA</th>
+          <td mat-cell *matCellDef="let row">{{ row.FechaMensaje }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="asunto">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>ASUNTO</th>
+          <td mat-cell *matCellDef="let row">{{ row.Asunto }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="detalle">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>DETALLE</th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-raised-button color="primary" (click)="abrirNotificacion(row)" class="botom-buscar">
+              <mat-icon>search</mat-icon>
+              <span translate>Detalles</span>
+            </button>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="adjunto">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>ADJUNTO</th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-raised-button color="primary" (click)="abrirAdjunto(row)" class="botom-buscar">
+              <mat-icon *ngIf="row.Adjunto">get_app</mat-icon>
+              <mat-icon *ngIf="!row.Adjunto">cancel</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="4">No se posee información</td>
+        </tr>
+      </table>
+
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+    </div>
+  </mat-card>
+</div>

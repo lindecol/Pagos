@@ -1,0 +1,28 @@
+﻿
+@{
+    ViewBag.Title = "Resultado de la operación";
+}
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>Transacción</title>
+    </head>
+    <body style="font-family:Arial" >
+        <div class="row">
+            <h3>Resultado de la operación: @ViewBag.Meta</h3>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-sm-3" style="margin: 2px">
+                <h4>Referencia: @ViewBag.Referencia</h4>
+            </div>
+            <div class="col-sm-3" style="margin: 2px">
+                <h4>Monto: @ViewBag.Monto</h4>
+            </div>
+        </div>
+        <hr />
+    </body>
+</html>
